@@ -1,16 +1,17 @@
 #! /usr/bin/env node
 
-//var licenseTpls = require('./lib/license_tpl.json');
 var prompt = require("prompt");
 var program = require('commander');
 
 var packageInfo = require('./package.json');
+var licenseTpls = require('./lib/license_tpl.json');
 var args = process.argv.slice(2);
 
+// handle th cmd-line logical and parse options.
 if(args.length <= 0) {
     doAsk();
 } else if('-'.indexOf(args.join('') < 0) && args.indexOf('version') < 0) {
-    //doMatch();
+    doMatch();
 } else {
     program
         .description('Use this command to generate a license file.')
@@ -25,7 +26,7 @@ if(args.length <= 0) {
 }
 
 
-function doAsk() {
+function doAsk(callback) {
     prompt.message = "license-gen!".cyan;
     prompt.delimiter = " ".green;
     prompt.start();
@@ -49,12 +50,20 @@ function doAsk() {
             }
         }
     }, function(err, result) {
-        console.log(result);
+        callback(result);
     })
 
 }
 
-
+// match the arguments to test if there is a supported license type
 function doMatch() {
-    
+    var licenses = Object.keys(licenseTpls);
+    var matachedIdx = '';
+
+    licenses.some(function(element, idx, arr) {
+        matachedIdx = idx;
+        return args.indexOf(element) >= 0;
+    })
+
+    console.log(licenses[matachedIdx]);
 }
