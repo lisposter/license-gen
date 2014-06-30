@@ -1,0 +1,27 @@
+{
+  "name": "license-gen",
+  "version": "0.0.0",
+  "description": "A interactive generater for opensouce license",
+  "main": "index.js",
+  "dependencies": {
+    "prompt": "~0.2.13"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/lisposter/license-gen.git"
+  },
+  "keywords": [
+    "license",
+    "commandline"
+  ],
+  "author": "Leigh Zhu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lisposter/license-gen/issues"
+  },
+  "homepage": "https://github.com/lisposter/license-gen"
+}

@@ -1,0 +1,1 @@
+var licenseTpls = require('./lib/license_tpl.json');
