@@ -3,10 +3,14 @@
   "version": "0.0.0",
   "description": "A interactive generater for opensouce license",
   "main": "index.js",
-  "bin": {"license-gen": "index.js"},
+  "bin": {
+    "license-gen": "index.js"
+  },
   "dependencies": {
+    "async": "^0.9.0",
     "commander": "^2.2.0",
-    "prompt": "~0.2.13"
+    "prompt": "~0.2.13",
+    "underscore": "^1.6.0"
   },
   "devDependencies": {},
   "scripts": {
