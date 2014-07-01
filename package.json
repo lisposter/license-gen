@@ -1,7 +1,7 @@
 {
   "name": "license-gen",
-  "version": "0.0.2",
-  "description": "A interactive generater for opensouce license",
+  "version": "0.0.3",
+  "description": "A interactive generator for opensouce license",
   "main": "index.js",
   "bin": {
     "license-gen": "index.js"
@@ -22,7 +22,8 @@
   },
   "keywords": [
     "license",
-    "commandline"
+    "generator",
+    "cli"
   ],
   "author": "Leigh Zhu",
   "license": "MIT",
