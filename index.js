@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 var fs = require('fs');
+var exec = require('child_process').exec;
 var prompt = require("prompt");
 var program = require('commander');
 var _ = require('underscore');
@@ -39,21 +40,46 @@ if(args.length <= 0) {
 }
 
 function getBasicInfo(callback) {
-    program
-        .description('Use this command to generate a license file.')
-        .version(packageInfo.version)
-        .option('-a, --author <author>', 'Your name.', packageInfo.author)
-        .option('-y, --year <year>', 'Year used in your license.', new Date().getFullYear())
-        .option('-p, --project <project>', 'Project\'s name', packageInfo.name)
-        .parse(process.argv);
+    async.waterfall([
+        function(callback) {
+            program
+                .description('Use this command to generate a license file.')
+                .version(packageInfo.version)
+                .option('-a, --author <author>', 'Your name.', packageInfo.author)
+                .option('-y, --year <year>', 'Year used in your license.', new Date().getFullYear())
+                .option('-p, --project <project>', 'Project\'s name', packageInfo.name)
+                .parse(process.argv);
 
-    config = {
-        author: program.author,
-        year: program.year,
-        project: program.project
-    };
+            config = {
+                author: program.author,
+                year: program.year,
+                project: program.project
+            };
 
-    callback(null, config);
+            callback(null, config);
+        },
+        function(config, callback) {
+
+            // if no project name in package.json, use dir name insteed.
+            if(!config.project) {
+                config.project = __dirname.split('/').pop();
+            }
+
+            // if neither [-a] arg provided nor author info in package.json, use git config insteed.
+            // TODO, if none of these specify an author name.
+            if(!config.author) {
+                exec('git config --get user.name', function(err, stdout, stderr) {
+                    if(err) throw err;
+                    config.author = stdout.replace(/[\n\r]/g, '');
+                    callback(null, config);
+                })
+            } else {
+                callback(null, config);
+            }
+        }
+    ], function(err, result) {
+        callback(err, result);
+    });
 }
 
 function doAsk(callback) {
