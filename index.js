@@ -18,7 +18,7 @@ if(args.length <= 0) {
 } else if(args.join('').indexOf('-') < 0 && args.indexOf('version') < 0) {
     async.waterfall([
         function(callback) {
-            doMatch(function(err, result) {
+            doMatch(null, function(err, result) {
                 if(err) console.log(err.msg);
                 callback(null, result);
             })
@@ -36,7 +36,53 @@ if(args.length <= 0) {
         }
     ]);
 } else {
-    getBasicInfo();
+    async.waterfall([
+        function(callback) {
+
+            getBasicInfo(function(err, config, remainArgs) {
+                if(remainArgs.length <= 0) {
+
+                    prompt.message = "license-gen!".cyan;
+                    prompt.delimiter = " ".green;
+                    prompt.start();
+
+                    prompt.get({
+                        properties: {
+                            license: {
+                                description: 'Input the license type you want to use.',
+                                required: true
+                            }
+                        }
+                    }, function(err, result) {
+                        if(err) throw err;
+                        callback(null, config, result.license, remainArgs);
+                    })
+                } else {
+                    callback(null, config, null, remainArgs);
+                }
+
+                
+
+
+            });
+        },
+        function(config, licenseType, remainArgs, callback) {
+            if(!licenseType) {
+                doMatch(remainArgs, function(err, result) {
+                    if(err) console.error(err.msg);
+                    callback(null, result, config);
+                })
+            } else {
+                callback(null, licenseType, config);
+            }
+        },
+        function(licenseType, config, callback) {
+            genLice(licenseType, config, function(err, result) {
+                if(err) console.error(err);
+                console.log('LICENSE has been generated!');
+            })
+        }
+    ]);
 }
 
 function getBasicInfo(callback) {
@@ -56,9 +102,11 @@ function getBasicInfo(callback) {
                 project: program.project
             };
 
-            callback(null, config);
+            remainArgs = program.args;
+
+            callback(null, config, remainArgs);
         },
-        function(config, callback) {
+        function(config, remainArgs, callback) {
 
             // if no project name in package.json, use dir name insteed.
             if(!config.project) {
@@ -71,14 +119,14 @@ function getBasicInfo(callback) {
                 exec('git config --get user.name', function(err, stdout, stderr) {
                     if(err) throw err;
                     config.author = stdout.replace(/[\n\r]/g, '');
-                    callback(null, config);
+                    callback(null, config, remainArgs);
                 })
             } else {
-                callback(null, config);
+                callback(null, config, remainArgs);
             }
         }
-    ], function(err, result) {
-        callback(err, result);
+    ], function(err, result, remainArgs) {
+        callback(err, result, remainArgs);
     });
 }
 
@@ -112,13 +160,14 @@ function doAsk(callback) {
 }
 
 // match the arguments to test if there is a supported license type
-function doMatch(callback) {
+function doMatch(arr, callback) {
     var licenses = Object.keys(licenseTpls);
     var matachedIdx = '';
+    arr = arr || args;
 
-    var matached = licenses.some(function(element, idx, arr) {
+    var matached = licenses.some(function(element, idx, originArr) {
         matachedIdx = idx;
-        return args.indexOf(element) >= 0;
+        return arr.indexOf(element) >= 0;
     })
 
     if(matached) {
