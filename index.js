@@ -10,7 +10,7 @@ var args = process.argv.slice(2);
 // handle th cmd-line logical and parse options.
 if(args.length <= 0) {
     doAsk();
-} else if('-'.indexOf(args.join('') < 0) && args.indexOf('version') < 0) {
+} else if(args.join('').indexOf('-') < 0 && args.indexOf('version') < 0) {
     doMatch();
 } else {
     program
@@ -23,6 +23,7 @@ if(args.length <= 0) {
 
 
     console.log(program.author, program.year, program.project)
+    console.dir(program.args);
 }
 
 
