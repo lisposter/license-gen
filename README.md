@@ -17,6 +17,12 @@ cd /path/to/yourproject
 license-gen LICENSE_TYPE
 ```
 
+# Advance
+
+```
+$ license-gen -a YOURNAME -y YEAR -p PROJECT LINCESE
+```
+
 # In the future.
 
 * interactive dialog for choosing license type, if you don't know which one to use.
