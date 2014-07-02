@@ -14,7 +14,10 @@ var args = process.argv.slice(2);
 var config = {};
 // handle th cmd-line logical and parse options.
 if(args.length <= 0) {
-    doAsk();
+    //promptBasic();
+    promptChooseLicense(function(err, licenses) {
+        console.log(licenses);
+    });
 } else if(args.join('').indexOf('-') < 0 && args.indexOf('version') < 0) {
     async.waterfall([
         function(callback) {
@@ -60,10 +63,6 @@ if(args.length <= 0) {
                 } else {
                     callback(null, config, null, remainArgs);
                 }
-
-                
-
-
             });
         },
         function(config, licenseType, remainArgs, callback) {
@@ -130,7 +129,7 @@ function getBasicInfo(callback) {
     });
 }
 
-function doAsk(callback) {
+function promptBasic(callback) {
     prompt.message = "license-gen!".cyan;
     prompt.delimiter = " ".green;
     prompt.start();
@@ -140,7 +139,8 @@ function doAsk(callback) {
             author: {
                 description: "Input your name.",
                 message: 'You must specify your name',
-                required: true
+                required: true,
+                default: packageInfo.name || ''
             },
             year: {
                 type: 'number',
@@ -157,6 +157,128 @@ function doAsk(callback) {
         callback(err, result);
     })
 
+}
+
+function promptChooseLicense(callback) {
+
+    var condition = {};
+
+    function test(str) {
+        var TRUERE = /y/i;
+        var FALSERE = /n/i;
+
+        if(TRUERE.test(str)) return true;
+        if(FALSERE.test(str)) return false;
+    }
+
+    prompt.message = "license-gen:".cyan;
+    prompt.delimiter = " ".green;
+    var properties = {
+        dontCare: {
+            name: 'value',
+            message: 'I don\'t care?',
+            validator: /y[es]*|n[o]?/,
+            default: 'n'
+        },
+        isCode: {
+            name: 'value',
+            message: 'Is your content code?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        },
+        modSameLicense: {
+            name: 'value',
+            message: 'Should be issued under the same license?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        },
+        linkedInSameLicense: {
+            name: 'value',
+            message: 'All linked works must be issued under the same license?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        },
+        plpb: {
+            name: 'value',
+            message: 'Prohibit DRM, locaked-down firmware, patent suits; broader license compatibility?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        },
+        containInfo: {
+            name: 'value',
+            message: 'Every file must contain all information about changes, copyrights and patents. Patent Protection?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        },
+        prohibit: {
+            name: 'value',
+            message: 'Prohibit use of copyright holder\'s name for promotion?',
+            validator: /y[es]*|n[o]?/,
+            warning: 'Must respond yes or no',
+            default: 'y'
+        }
+    }
+    prompt.start();
+
+    prompt.get(properties.dontCare, function(err, result) {
+        if(err) return console.error(err);
+        if(test(result.value)) return callback(null, ['wtfpl', 'cc0']);
+
+        prompt.get(properties.isCode, function(err, result) {
+            if(err) return console.error(err);
+            if(!test(result.value)) return callback(null, ['Creative Commons']);  
+        });
+
+        prompt.get(properties.modSameLicense, function(err, result) {
+            if(err) return console.error(err);
+            if(test(result.value)) {
+                prompt.get(properties.linkedInSameLicense, function(err, result) {
+                    if(err) return console.error(err);
+                    if(test(result.value)) {
+                        prompt.get(properties.plpb, function(err, result) {
+                            if(err) return console.error(err);
+                            if(test(result.value)) {
+                                return callback(null, ['gpl3']);
+                            } else {
+                                return callback(null, ['gpl2']);
+                            }
+                        });
+                    } else {
+                        prompt.get(properties.plpb, function(err, result) {
+                            if(err) return console.error(err);
+                            if(test(result.value)) {
+                                return callback(null, ['lgpl']);
+                            } else {
+                                return callback(null, ['mpl']);
+                            }
+                        });
+                    } 
+                });
+            } else {
+                prompt.get(properties.containInfo, function(err, result) {
+                    if(err) return console.error(err);
+                    if(test(result.value)) {
+                        return callback(null, ['apache']);
+                    } else {
+                        prompt.get(properties.prohibit, function(err, result) {
+                            if(err) return console.error(err);
+                            if(test(result.value)) {
+                                return callback(null, ['bsd3']);
+                            } else {
+                                return callback(null, ['mit', 'bsd2']);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+    });
 }
 
 // match the arguments to test if there is a supported license type
