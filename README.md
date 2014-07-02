@@ -1,4 +1,4 @@
-Just in dev now. Temporary only one way is avalible :P
+Just in dev now. the interactive way is not implemented temporary. :P
 
 
 # license-gen
@@ -20,8 +20,33 @@ license-gen LICENSE_TYPE
 # Advance
 
 ```
-$ license-gen -a YOURNAME -y YEAR -p PROJECT LINCESE
+$ license-gen [-a YOURNAME[ -y YEAR[ -p PROJECT[ LINCESE]]]]
 ```
+
+eg.
+
+```
+$ license-gen -a Luffy mit
+```
+
+```
+$ license-gen -a Luffy -y 2000 mit
+```
+
+license type can insert into any where of your command:
+```
+$ license-gen mit -a Luffy -y 2000
+```
+
+and, if you forget to specify a license type:
+```
+$ license-gen -a Luffy
+```
+then, it will ask you to input a license type.
+
+So, You really don't need to remember these arguments' requirements.
+
+
 
 # In the future.
 
