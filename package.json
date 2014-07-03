@@ -1,6 +1,6 @@
 {
   "name": "license-gen",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A interactive generator for opensouce license",
   "main": "index.js",
   "bin": {
