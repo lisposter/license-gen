@@ -14,15 +14,62 @@ var args = process.argv.slice(2);
 var config = {};
 // handle th cmd-line logical and parse options.
 if(args.length <= 0) {
-    //promptBasic();
-    promptChooseLicense(function(err, licenses) {
-        console.log(licenses);
-    });
+    async.waterfall([
+        function(callback) {
+            promptBasic(function(err, result) {
+                if(err) return console.error(err)
+                callback(null, result);
+            })
+        },
+        function(config, callback) {
+            promptChooseLicense(function(err, licenses) {
+                if(err) return console.error(err)
+                if(licenses.length <= 0) return console.error('Sorry, no advice.')
+                if(licenses.length === 1) {
+                    prompt.message = "license-gen!".cyan;
+                    prompt.delimiter = " ".green;
+                    prompt.start();
+
+                    prompt.get({
+                        name: 'value',
+                        message: 'Seems ' + licenses[0] + ' is satisfied your requirement, press return key to generate it.',
+                        validator: /y[es]*|n[o]?/,
+                        warning: 'Must respond yes or no',
+                        default: 'y'
+                    }, function(err, result) {
+                        if(test(result.value)) {
+                            genLice(licenses[0], config, function(err, result) {
+                                if(err) console.error(err);
+                                console.log('LICENSE has been generated!');
+                            })
+                        }
+                    })
+                } else {
+                    prompt.message = "license-gen!".cyan;
+                    prompt.delimiter = " ".green;
+                    prompt.start();
+
+                    prompt.get({
+                        name: 'value',
+                        message: 'Seems ' + licenses.join() + ' are satisfied your requirement, Please choose one of them.',
+                        warning: 'Must respond yes or no',
+                        default: licenses[0]
+                    }, function(err, result) {
+                        if(licenses.indexOf(result.value) < 0) return console.error('You may input the wrong license');
+                        genLice(result.value, config, function(err, result) {
+                            if(err) console.error(err);
+                            console.log('LICENSE has been generated!');
+                        })
+                    })
+                }
+            });
+        }
+    ]);
 } else if(args.join('').indexOf('-') < 0 && args.indexOf('version') < 0) {
     async.waterfall([
         function(callback) {
             doMatch(null, function(err, result) {
-                if(err) console.log(err.msg);
+                if(err) return console.log(err.msg);
                 callback(null, result);
             })
         },
@@ -68,7 +115,7 @@ if(args.length <= 0) {
         function(config, licenseType, remainArgs, callback) {
             if(!licenseType) {
                 doMatch(remainArgs, function(err, result) {
-                    if(err) console.error(err.msg);
+                    if(err) return console.error(err.msg);
                     callback(null, result, config);
                 })
             } else {
@@ -82,6 +129,14 @@ if(args.length <= 0) {
             })
         }
     ]);
+}
+
+function test(str) {
+    var TRUERE = /y/i;
+    var FALSERE = /n/i;
+
+    if(TRUERE.test(str)) return true;
+    if(FALSERE.test(str)) return false;
 }
 
 function getBasicInfo(callback) {
@@ -140,7 +195,7 @@ function promptBasic(callback) {
                 description: "Input your name.",
                 message: 'You must specify your name',
                 required: true,
-                default: packageInfo.name || ''
+                default: packageInfo.author || ''
             },
             year: {
                 type: 'number',
@@ -154,6 +209,7 @@ function promptBasic(callback) {
             }
         }
     }, function(err, result) {
+        if(err) return console.log(err);
         callback(err, result);
     })
 
@@ -163,20 +219,12 @@ function promptChooseLicense(callback) {
 
     var condition = {};
 
-    function test(str) {
-        var TRUERE = /y/i;
-        var FALSERE = /n/i;
-
-        if(TRUERE.test(str)) return true;
-        if(FALSERE.test(str)) return false;
-    }
-
     prompt.message = "license-gen:".cyan;
     prompt.delimiter = " ".green;
     var properties = {
         dontCare: {
             name: 'value',
-            message: 'I don\'t care?',
+            message: 'I don\'t care what they will do with my code?',
             validator: /y[es]*|n[o]?/,
             default: 'n'
         },
@@ -229,10 +277,10 @@ function promptChooseLicense(callback) {
         if(err) return console.error(err);
         if(test(result.value)) return callback(null, ['wtfpl', 'cc0']);
 
-        prompt.get(properties.isCode, function(err, result) {
-            if(err) return console.error(err);
-            if(!test(result.value)) return callback(null, ['Creative Commons']);  
-        });
+        // prompt.get(properties.isCode, function(err, result) {
+        //     if(err) return console.error(err);
+        //     if(!test(result.value)) return callback(null, ['Creative Commons']);  
+        // });
 
         prompt.get(properties.modSameLicense, function(err, result) {
             if(err) return console.error(err);
