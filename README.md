@@ -1,6 +1,3 @@
-Just in dev now. the interactive way is not implemented temporary. :P
-
-
 # license-gen
 
 type some command to generate a LICENSE file for your project.
