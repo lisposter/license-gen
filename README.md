@@ -47,6 +47,12 @@ then, it will ask you to input a license type.
 So, You really don't need to remember these arguments' requirements.
 
 
+# Alternative
+
+you can use the interactive way to choosing a license. just type the `license-gen` and press `Return` key.
+
+and then, finish the questions prompted, you will get a license too.
+
 
 # In the future.
 
@@ -57,4 +63,5 @@ So, You really don't need to remember these arguments' requirements.
 
 
 # Info
-Inspired by https://www.npmjs.org/package/license.
+* Inspired by https://www.npmjs.org/package/license.
+* license choosing flow is from http://paulmillr.com/posts/simple-description-of-popular-software-licenses/
