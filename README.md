@@ -52,9 +52,6 @@ and then, finish the questions prompted, you will get a license too.
 
 
 # In the future.
-
-* interactive dialog for choosing license type, if you don't know which one to use.
-* any numbers of arguments will work, default value will come from your configs.
 * append the README file, add license note to the end of the file.
 * much more... I think. :P
 
