@@ -7,9 +7,10 @@ var program = require('commander');
 var _ = require('underscore');
 var async = require('async');
 
-var packageInfo = require('./package.json');
+var packageInfo = require(process.cwd() + '/package.json');
 var licenseTpls = require('./lib/license_tpl.json');
 var args = process.argv.slice(2);
+
 
 var config = {};
 // handle th cmd-line logical and parse options.
@@ -142,42 +143,40 @@ function test(str) {
 function getBasicInfo(callback) {
     async.waterfall([
         function(callback) {
+            var config = {};
+
+            config.project = __dirname.split('/').pop();
+
+            // if neither [-a] arg provided nor author info in package.json, use git config insteed.
+            // TODO, if none of these specify an author name.
+            exec('git config --get user.name', function(err, stdout, stderr) {
+                if(err) {
+                    config.author = ''
+                }
+                config.author = stdout.replace(/[\n\r]/g, '');
+                callback(null, config);
+            })
+        },
+        function(config, callback) {
             program
                 .description('Use this command to generate a license file.')
                 .version(packageInfo.version)
-                .option('-a, --author <author>', 'Your name.', packageInfo.author)
+                .option('-a, --author <author>', 'Your name.', config.author || '')
                 .option('-y, --year <year>', 'Year used in your license.', new Date().getFullYear())
                 .option('-p, --project <project>', 'Project\'s name', packageInfo.name)
                 .parse(process.argv);
 
-            config = {
-                author: program.author,
-                year: program.year,
-                project: program.project
-            };
+            configCli = {}
+
+            if(program.author) configCli.author = program.author
+            if(program.year) configCli.year = program.year
+            if(program.project) configCli.project = program.project
+
+            config = _.extend(config, configCli)
 
             remainArgs = program.args;
 
             callback(null, config, remainArgs);
-        },
-        function(config, remainArgs, callback) {
-
-            // if no project name in package.json, use dir name insteed.
-            if(!config.project) {
-                config.project = __dirname.split('/').pop();
-            }
-
-            // if neither [-a] arg provided nor author info in package.json, use git config insteed.
-            // TODO, if none of these specify an author name.
-            if(!config.author) {
-                exec('git config --get user.name', function(err, stdout, stderr) {
-                    if(err) throw err;
-                    config.author = stdout.replace(/[\n\r]/g, '');
-                    callback(null, config, remainArgs);
-                })
-            } else {
-                callback(null, config, remainArgs);
-            }
         }
     ], function(err, result, remainArgs) {
         callback(err, result, remainArgs);
