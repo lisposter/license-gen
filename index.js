@@ -7,7 +7,12 @@ var program = require('commander');
 var _ = require('underscore');
 var async = require('async');
 
-var packageInfo = require(process.cwd() + '/package.json');
+try {
+    var packageInfo = require(process.cwd() + '/package.json');
+} 
+catch (e) {
+    var packageInfo = {};
+}
 var licenseTpls = require('./lib/license_tpl.json');
 var args = process.argv.slice(2);
 
