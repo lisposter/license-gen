@@ -8,7 +8,7 @@ var licenseTpls = require('./lib/license_tpl.json');
 
 
 function genLice(licenseType, config, callback) {
-    var license = licenseTpls[licenseType];
+    var license = licenseTpls[licenseType.trim().toLowerCase()];
 
     var location = './LICENSE';
 
