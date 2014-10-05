@@ -1,10 +1,10 @@
 {
   "name": "license-gen",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A interactive generator for opensouce license",
   "main": "index.js",
   "bin": {
-    "license-gen": "index.js"
+    "license": "bin/cli.js"
   },
   "dependencies": {
     "async": "^0.9.0",
