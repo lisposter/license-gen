@@ -348,10 +348,10 @@ function doMatch(arr, callback) {
     if(matached) {
         callback(null, licenses[matachedIdx]);
     } else {
-        callback({
-            code: '001',
-            msg: 'license not supported'
-        }, matachedIdx)
+        // callback({
+        //     code: '001',
+        //     msg: 'license not supported'
+        // }, matachedIdx)
     }
 
 }
