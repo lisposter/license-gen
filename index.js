@@ -6,10 +6,11 @@ var prompt = require("prompt");
 var program = require('commander');
 var _ = require('underscore');
 var async = require('async');
+var path = require('path');
 
 try {
     var packageInfo = require(process.cwd() + '/package.json');
-} 
+}
 catch (e) {
     var packageInfo = {};
 }
@@ -283,7 +284,7 @@ function promptChooseLicense(callback) {
 
         // prompt.get(properties.isCode, function(err, result) {
         //     if(err) return console.error(err);
-        //     if(!test(result.value)) return callback(null, ['Creative Commons']);  
+        //     if(!test(result.value)) return callback(null, ['Creative Commons']);
         // });
 
         prompt.get(properties.modSameLicense, function(err, result) {
@@ -309,7 +310,7 @@ function promptChooseLicense(callback) {
                                 return callback(null, ['mpl']);
                             }
                         });
-                    } 
+                    }
                 });
             } else {
                 prompt.get(properties.containInfo, function(err, result) {
@@ -345,25 +346,32 @@ function doMatch(arr, callback) {
     })
 
     if(matached) {
-        callback(null, licenses[matachedIdx]); 
+        callback(null, licenses[matachedIdx]);
     } else {
         callback({
             code: '001',
             msg: 'license not supported'
         }, matachedIdx)
     }
-    
+
 }
 
 function genLice(licenseType, config, callback) {
     var license = licenseTpls[licenseType];
-    var ws = fs.createWriteStream('./LICENSE', {
+
+    var location = './LICENSE';
+
+    if(config._path) {
+        location = path.resolve(config._path, './LICENSE');
+    }
+
+    var ws = fs.createWriteStream(location, {
         flags: 'w',
         encoding: 'utf8'
     });
 
     var compiled = _.template(license.body);
-    
+
 
     ws.end(compiled(config));
 
@@ -371,3 +379,5 @@ function genLice(licenseType, config, callback) {
         callback(err, result);
     })
 }
+
+module.exports = exports.genLicense = genLice;
