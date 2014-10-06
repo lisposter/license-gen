@@ -11,33 +11,33 @@ $ npm install -g license-gen
 
 ```
 cd /path/to/yourproject
-license-gen LICENSE_TYPE
+license LICENSE_TYPE
 ```
 
 # Advance
 
 ```
-$ license-gen [-a YOURNAME[ -y YEAR[ -p PROJECT[ LINCESE]]]]
+$ license [-a YOURNAME[ -y YEAR[ -p PROJECT[ LINCESE]]]]
 ```
 
 eg.
 
 ```
-$ license-gen -a Luffy mit
+$ license -a Luffy mit
 ```
 
 ```
-$ license-gen -a Luffy -y 2000 mit
+$ license -a Luffy -y 2000 mit
 ```
 
 license type can insert into any where of your command:
 ```
-$ license-gen mit -a Luffy -y 2000
+$ license mit -a Luffy -y 2000
 ```
 
 and, if you forget to specify a license type:
 ```
-$ license-gen -a Luffy
+$ license -a Luffy
 ```
 then, it will ask you to input a license type.
 
@@ -46,7 +46,7 @@ So, You really don't need to remember these arguments' requirements.
 
 # Alternative
 
-you can use the interactive way to choosing a license. just type the `license-gen` and press `Return` key.
+you can use the interactive way to choosing a license. just type the `license` and press `Return` key.
 
 and then, finish the questions prompted, you will get a license too.
 
