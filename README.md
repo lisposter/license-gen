@@ -17,7 +17,7 @@ license LICENSE_TYPE
 # Advance
 
 ```
-$ license [-a YOURNAME[ -y YEAR[ -p PROJECT[ LINCESE]]]]
+$ license [-a YOURNAME[ -y YEAR[ -p PROJECT[ LICENSE]]]]
 ```
 
 eg.
